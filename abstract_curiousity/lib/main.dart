@@ -26,46 +26,42 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider(
-      create: (context) => AuthRepository(),
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider<AuthBloc>(
-            create: (BuildContext context) => AuthBloc(
-              authRepository: RepositoryProvider.of<AuthRepository>(context),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(
+          create: (BuildContext context) => AuthBloc(
+            authRepository: AuthRepository(),
+          ),
+        ),
+        BlocProvider<ProfileBloc>(
+          create: (BuildContext context) =>
+              ProfileBloc(profileRepository: ProfileRepository()),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: const ColorScheme.light(primary: Colors.black),
+          scaffoldBackgroundColor: Colors.black,
+          appBarTheme: const AppBarTheme(
+            elevation: 0.0,
+            iconTheme: IconThemeData(
+              color: Colors.grey,
             ),
           ),
-          BlocProvider<ProfileBloc>(
-            create: (BuildContext context) => ProfileBloc(
-                profileRepository:
-                    RepositoryProvider.of<ProfileRepository>(context)),
-          ),
-        ],
-        child: MaterialApp(
-          title: 'Flutter Demo',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            useMaterial3: true,
-            colorScheme: const ColorScheme.light(primary: Colors.black),
-            scaffoldBackgroundColor: Colors.black,
-            appBarTheme: const AppBarTheme(
-              elevation: 0.0,
-              iconTheme: IconThemeData(
-                color: Colors.grey,
-              ),
-            ),
-          ),
-          home: StreamBuilder<User?>(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (context, snapshot) {
-              // If the snapshot has user data, then they're already signed in. So Navigating to the Dashboard.
-              if (snapshot.hasData) {
-                return const HomePage();
-              }
-              // Otherwise, they're not signed in. Show the sign in page.
-              return const LandingPage();
-            },
-          ),
+        ),
+        home: StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            // If the snapshot has user data, then they're already signed in. So Navigating to the Dashboard.
+            if (snapshot.hasData) {
+              return const HomePage();
+            }
+            // Otherwise, they're not signed in. Show the sign in page.
+            return const LandingPage();
+          },
         ),
       ),
     );
