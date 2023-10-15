@@ -18,6 +18,19 @@ class _ChooseTopicsState extends State<ChooseTopics> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.black,
+        title: Center(
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            child: const Text(
+              "Follow alteast 5 Topics",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
       ),
       body: const TopicSelectorPage(),
     );

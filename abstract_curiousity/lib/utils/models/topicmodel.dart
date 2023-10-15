@@ -97,7 +97,8 @@ class _TopicSelectorPageState extends State<TopicSelectorPage> {
     return Stack(
       children: [
         ListView.builder(
-          shrinkWrap: true,
+          physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics()),
           itemCount: _topicSelector._categories.length,
           itemBuilder: (BuildContext context, int index) {
             final category = _topicSelector._categories.keys.elementAt(index);
@@ -118,31 +119,22 @@ class _TopicSelectorPageState extends State<TopicSelectorPage> {
                   const SizedBox(
                     height: 10,
                   ),
-                  GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 200,
-                            childAspectRatio: 2.5,
-                            crossAxisSpacing: 2,
-                            mainAxisSpacing: 6),
-                    shrinkWrap: true,
-                    itemCount: topics.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final topic = topics[index];
-                      return GestureDetector(
-                        child: Container(
-                          margin: const EdgeInsets.all(2),
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: topic['selected']
-                                  ? Colors.white
-                                  : Colors.grey.shade600,
-                              width: 2,
+                  Wrap(
+                    children: topics.map(
+                      (topic) {
+                        return GestureDetector(
+                          child: Container(
+                            margin: const EdgeInsets.all(2),
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: topic['selected']
+                                    ? Colors.white
+                                    : Colors.white24,
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Center(
                             child: Text(
                               topic['topic'],
                               textAlign: TextAlign.center,
@@ -151,35 +143,51 @@ class _TopicSelectorPageState extends State<TopicSelectorPage> {
                                 fontSize: 15,
                                 color: topic['selected']
                                     ? Colors.white
-                                    : Colors.grey.shade600,
+                                    : Colors.grey,
                               ),
                             ),
                           ),
-                        ),
-                        onTap: () {
-                          setState(
-                            () {
-                              _topicSelector.setTopicSelected(
-                                  category, topic['topic'], !topic['selected']);
-                              if (topic['selected']) {
-                                _selectedTopics.add([category, topic['topic']]);
-                              } else {
-                                _selectedTopics.removeWhere((element) =>
-                                    element[0] == category &&
-                                    element[1] == topic['topic']);
-                              }
-                              if (_selectedTopics.isNotEmpty) {
-                                _showContinueButton = true;
-                              }
-                              if (_selectedTopics.isEmpty) {
-                                _showContinueButton = false;
-                              }
-                            },
-                          );
-                        },
-                      );
-                    },
+                          onTap: () {
+                            setState(
+                              () {
+                                _topicSelector.setTopicSelected(category,
+                                    topic['topic'], !topic['selected']);
+                                if (topic['selected']) {
+                                  _selectedTopics
+                                      .add([category, topic['topic']]);
+                                } else {
+                                  _selectedTopics.removeWhere((element) =>
+                                      element[0] == category &&
+                                      element[1] == topic['topic']);
+                                }
+                                if (_selectedTopics.isNotEmpty &&
+                                    _selectedTopics.length >= 5) {
+                                  _showContinueButton = true;
+                                }
+                                if (_selectedTopics.isEmpty) {
+                                  _showContinueButton = false;
+                                }
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ).toList(),
                   ),
+                  // GridView.builder(
+                  //   gridDelegate:
+                  //       const SliverGridDelegateWithMaxCrossAxisExtent(
+                  //           maxCrossAxisExtent: 200,
+                  //           childAspectRatio: 2.5,
+                  //           crossAxisSpacing: 2,
+                  //           mainAxisSpacing: 6),
+                  //   shrinkWrap: true,
+                  //   itemCount: topics.length,
+                  //   itemBuilder: (BuildContext context, int index) {
+                  //     final topic = topics[index];
+
+                  //   },
+                  // ),
                 ],
               ),
             );
@@ -192,6 +200,7 @@ class _TopicSelectorPageState extends State<TopicSelectorPage> {
             right: 20,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white.withOpacity(0.9),
                 fixedSize: const Size.fromHeight(50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
