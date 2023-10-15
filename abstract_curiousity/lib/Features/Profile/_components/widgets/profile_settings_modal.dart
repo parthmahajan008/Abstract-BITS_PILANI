@@ -1,12 +1,23 @@
-import 'package:abstract_curiousity/Features/Edit%20Profile/edit_profile.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:abstract_curiousity/Features/Profile/edit_profile.dart';
 import 'package:abstract_curiousity/Features/Profile/_components/widgets/app_info_modal.dart';
 import 'package:abstract_curiousity/Features/Profile/_components/widgets/danger_modal.dart';
 import 'package:abstract_curiousity/Features/Reading%20History/reading_history_screen.dart';
 import 'package:flutter/material.dart';
-// import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../UserRegisteration/services/bloc/auth_bloc.dart';
 
 class ProfileSettings extends StatefulWidget {
-  const ProfileSettings({super.key});
+  final BuildContext carrriedContext;
+  final String nameOfUser;
+  final String bioOfUser;
+  const ProfileSettings({
+    Key? key,
+    required this.carrriedContext,
+    required this.nameOfUser,
+    required this.bioOfUser,
+  }) : super(key: key);
 
   @override
   State<ProfileSettings> createState() => _ProfileSettingsState();
@@ -33,7 +44,10 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const EditProfile(),
+                  builder: (context) => EditProfile(
+                    nameOfuser: widget.nameOfUser,
+                    bioOfUser: widget.bioOfUser,
+                  ),
                 ),
               );
             },
@@ -187,7 +201,9 @@ class _ProfileSettingsState extends State<ProfileSettings> {
           ),
           GestureDetector(
             behavior: HitTestBehavior.translucent,
-            onTap: () {},
+            onTap: () {
+              widget.carrriedContext.read<AuthBloc>().add(LogOutRequested());
+            },
             child: const Padding(
               padding: EdgeInsets.symmetric(horizontal: 15.0),
               child: Row(
@@ -201,9 +217,10 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   Text(
                     'Logout : Stop Being Curious?',
                     style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 20),
+                      color: Colors.white,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 20,
+                    ),
                   ),
                 ],
               ),

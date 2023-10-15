@@ -1,7 +1,9 @@
 import 'package:abstract_curiousity/utils/models/topicmodel.dart';
+
 import 'package:flutter/material.dart';
 
 class ChooseTopics extends StatefulWidget {
+  static const String routeName = '/personalise-topics';
   const ChooseTopics({super.key});
 
   @override
@@ -16,13 +18,6 @@ class _ChooseTopicsState extends State<ChooseTopics> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.white,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
       ),
       body: const TopicSelectorPage(),
     );

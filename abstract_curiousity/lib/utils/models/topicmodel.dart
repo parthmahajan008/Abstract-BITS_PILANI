@@ -1,4 +1,6 @@
 import 'package:abstract_curiousity/Features/HomePage/homepage.dart';
+import 'package:abstract_curiousity/Features/UserRegisteration/services/auth_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class TopicSelector {
@@ -79,6 +81,13 @@ class TopicSelectorPage extends StatefulWidget {
 
 class _TopicSelectorPageState extends State<TopicSelectorPage> {
   final TopicSelector _topicSelector = TopicSelector();
+  final AuthRepository _authRepository = AuthRepository();
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  void saveUser() {
+    _authRepository.saveUsertoBackend(
+        context: context, user: _firebaseAuth.currentUser!);
+  }
+
 //create a seetter _showNextButton
   bool _showContinueButton = false;
   List<List<String>> _selectedTopics = [];
@@ -189,6 +198,7 @@ class _TopicSelectorPageState extends State<TopicSelectorPage> {
                 ),
               ),
               onPressed: () {
+                saveUser();
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const HomePage()),
                 );

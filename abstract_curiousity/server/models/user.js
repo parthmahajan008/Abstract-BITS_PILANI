@@ -14,31 +14,18 @@ const userSchema = mongoose.Schema({
       message: "Please enter a valid email address", //runs when validator is false
     },
   },
-  phone: {
+  firebaseUid: {
     type: String,
     required: true,
     unique: true,
-    validate: {
-      validator: (value) => {
-        const re = /^[0-9]{10}$/;
-        return value.match(re);
-      },
-      message: "Please enter a valid phone number",
-    },
-  },
-  password: {
-    required: true,
-    type: String,
-    validate: {
-      validator: (value) => {
-        return value.length > 6;
-      },
-      message: "Password must be greater than 6 characters",
-    },
   },
   writer: {
     type: Boolean,
     default: false,
+  },
+  bio: {
+    type: String,
+    default: "",
   },
   //liked articles
 });

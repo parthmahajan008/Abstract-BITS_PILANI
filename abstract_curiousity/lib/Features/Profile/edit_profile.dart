@@ -2,24 +2,30 @@
 
 // Path: lib/Features/Edit%20Profile/edit_profile.dart
 // Compare this snippet from lib/Features/Profile/_components/widgets/danger_modal.dart:
+import 'package:abstract_curiousity/Features/Profile/services/profile_repository.dart';
+import 'package:abstract_curiousity/models/user.dart';
 import 'package:abstract_curiousity/utils/widgets/extendedTextButton.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class EditProfile extends StatefulWidget {
-  const EditProfile({super.key});
+  final String nameOfuser;
+  final String bioOfUser;
+  const EditProfile(
+      {super.key, required this.nameOfuser, required this.bioOfUser});
 
   @override
   State<EditProfile> createState() => _EditProfileState();
 }
 
 class _EditProfileState extends State<EditProfile> {
+  final ProfileRepository _profileRepository = ProfileRepository();
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   TextEditingController nameEditingController = TextEditingController();
-  TextEditingController userNameeditingController = TextEditingController();
   TextEditingController bioEditingController = TextEditingController();
 
-  String _name = 'John Doe';
-  String _bio = 'Hello, world!';
-  String _userName = "alpha23";
+  String _name = "";
+  String _bio = '';
 
   void _onNameChanged(String value) {
     setState(() {
@@ -33,10 +39,35 @@ class _EditProfileState extends State<EditProfile> {
     });
   }
 
-  void _onUserNameChanged(String value) {
-    setState(() {
-      _userName = value;
-    });
+  void getUserData() async {
+    CustomUser? _customUser = await _profileRepository.getCurrentNameAndBio(
+        firebaseUid: _firebaseAuth.currentUser!.uid, context: context);
+    _name = _customUser!.name;
+    _bio = _customUser.bio!;
+    nameEditingController.text = _name;
+    bioEditingController.text = _bio;
+
+    nameEditingController.selection =
+        TextSelection.collapsed(offset: nameEditingController.text.length);
+    bioEditingController.selection =
+        TextSelection.collapsed(offset: bioEditingController.text.length);
+  }
+
+  void updateUserData() {
+    _profileRepository.updateNameAndBio(
+      firebaseUid: FirebaseAuth.instance.currentUser!.uid,
+      name: _name,
+      bio: _bio,
+      context: context,
+    );
+  }
+
+  @override
+  void initState() {
+    _name = widget.nameOfuser;
+    _bio = widget.bioOfUser;
+    super.initState();
+    getUserData();
   }
 
   @override
@@ -52,6 +83,17 @@ class _EditProfileState extends State<EditProfile> {
           ),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              updateUserData();
+              Navigator.of(context).pop();
+            },
+            child: const Text(
+              "Save",
+            ),
+          )
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -84,33 +126,28 @@ class _EditProfileState extends State<EditProfile> {
               onPressed: () {
                 _onNameChanged(nameEditingController.text);
               },
+              fieldType: "small",
             ),
-            CustomTextField(
-              controller: userNameeditingController,
-              hintText: "Enter your UserName",
-              onPressed: () {
-                _onUserNameChanged(userNameeditingController.text);
-              },
-            ),
+            // CustomTextField(
+            //   controller: userNameeditingController,
+            //   hintText: "Enter your UserName",
+            //   onPressed: () {
+            //     _onUserNameChanged(userNameeditingController.text);
+            //   },
+            // ),
             CustomTextField(
               controller: bioEditingController,
               hintText: "Enter your Bio",
               onPressed: () {
                 _onBioChanged(bioEditingController.text);
               },
+              fieldType: "long",
             ),
             const Expanded(
               child: SizedBox(
                 height: 0,
               ),
             ),
-            ExtendedTextButton(
-              color: Colors.grey.shade900,
-              title: "Save Changes",
-              onPressed: () {
-                print("$_name $_bio $_userName");
-              },
-            )
           ],
         ),
       ),
@@ -124,16 +161,19 @@ class CustomTextField extends StatelessWidget {
     required this.controller,
     required this.hintText,
     required this.onPressed,
+    required this.fieldType,
   });
   final String hintText;
+  final String fieldType;
   final TextEditingController controller;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5),
+      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10),
       child: TextFormField(
+        maxLength: (fieldType == "long") ? 150 : 60,
         onChanged: (value) => onPressed(),
         enableSuggestions: true,
         keyboardType: TextInputType.emailAddress,
@@ -143,19 +183,31 @@ class CustomTextField extends StatelessWidget {
           fontSize: 18,
         ),
         decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: const TextStyle(
-            color: Colors.grey,
+          counterStyle: TextStyle(
+            color: Colors.white.withOpacity(0.4),
           ),
-          border: const OutlineInputBorder(
+          counterText: (fieldType == "long")
+              ? "${controller.text.length.toString()}/150"
+              : "",
+          hintText: hintText,
+          hintStyle: TextStyle(
+            color: Colors.grey.withOpacity(0.8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: const BorderRadius.all(
+              Radius.circular(15),
+            ),
+            borderSide:
+                BorderSide(color: Colors.grey.withOpacity(0.4), width: 0.0),
+          ),
+          focusedBorder: const OutlineInputBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(15),
             ),
-            borderSide: BorderSide(
-              color: Colors.grey,
-            ),
+            borderSide: BorderSide(color: Colors.grey, width: 0.0),
           ),
         ),
+        cursorColor: Colors.grey[100],
       ),
     );
   }

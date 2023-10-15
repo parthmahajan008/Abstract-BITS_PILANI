@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>993207702537-cuubbejrah6i5onabr358r61b5n4croe.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.993207702537-cuubbejrah6i5onabr358r61b5n4croe</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDJOAtg6kmRKNmA9pIqeL85t-gzDf2PGzA</string>
+	<key>GCM_SENDER_ID</key>
+	<string>993207702537</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.abstractCuriousity</string>
+	<key>PROJECT_ID</key>
+	<string>abstract-60b74</string>
+	<key>STORAGE_BUCKET</key>
+	<string>abstract-60b74.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:993207702537:ios:ae0624a29a9a4e421594d8</string>
+</dict>
+</plist>

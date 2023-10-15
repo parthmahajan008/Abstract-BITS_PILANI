@@ -4,21 +4,21 @@ import bcrypt from "bcryptjs";
 const authRouter = express.Router();
 authRouter.post("/api/signup", async (req, res) => {
   try {
-    const { name, email, phone, password } = req.body;
+    const { name, email, firebaseUid } = req.body;
 
-    const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
+    const existingUser = await User.findOne({
+      $or: [{ email }, { firebaseUid }],
+    });
     if (existingUser) {
       return res.status(400).json({
         message: "User already exists",
       });
     }
-    const hashedPassword = await bcrypt.hash(password, 12);
     //CREATE USER
     let user = new User({
+      firebaseUid,
       name,
       email,
-      phone,
-      password: hashedPassword,
     });
     await user.save();
     res.status(200).json({
@@ -32,31 +32,47 @@ authRouter.post("/api/signup", async (req, res) => {
     });
   }
 });
-authRouter.post("/api/login", async (req, res) => {
+
+authRouter.put("/api/editProfile", async (req, res) => {
   try {
-    const { email, phone, password } = req.body;
-    const user = User.findOne({ $or: [{ email }, { phone }] });
+    const { firebaseUid, name, bio } = req.body;
+    const user = await User.findOne({ firebaseUid });
     if (!user) {
-      res.status(400).json({
-        message: "User does not exist",
+      return res.status(400).json({
+        message: "User not found",
       });
     }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      res.status(400).json({
-        message: "Invalid credentials",
-      });
-    }
-    const token = jwt.sign({ id: user._id }, "passwordKey");
-    res.json({
-      token,
-      ...user._doc,
+    user.name = name;
+    user.bio = bio;
+    await user.save();
+    return res.status(200).json({
+      message: "User updated successfully",
+      user,
     });
-  } catch (err) {
-    res.status(500).json({
+  } catch (e) {
+    return res.status(500).json({
       message: "Internal Server Error",
     });
   }
 });
-
+authRouter.get("/api/getEditInfo", async (req, res) => {
+  try {
+    const firebaseUid = req.query.firebaseUid;
+    const user = await User.findOne({ firebaseUid });
+    if (!user) {
+      return res.status(400).json({
+        message: "User not found",
+      });
+    }
+    return res.status(200).json({
+      message: "User Info Delivered successfully",
+      user,
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+});
 export default authRouter;
