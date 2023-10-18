@@ -30,8 +30,8 @@ ArticleRouter.get("/api/getNewsBySource", (req, res) => {
 
 ArticleRouter.get("/api/getNewsByCategory", (req, res) => {
   try {
-    const { category } = req.body;
-    const uri = `https://newsapi.org/v2/top-headlines?category=${category}&apiKey=${process.env.API_KEY}`;
+    const category = req.query.category;
+    const uri = `https://newsapi.org/v2/top-headlines?country=in&category=${category}&language=en&apiKey=${process.env.API_KEY}`;
     fetch(uri)
       .then((response) => response.json())
       .then((data) => {

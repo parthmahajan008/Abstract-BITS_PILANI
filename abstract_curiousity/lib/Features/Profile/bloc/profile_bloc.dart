@@ -15,7 +15,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       emit(ProfileLoading());
       try {
         CustomUser? _customuser = await profileRepository.getCurrentNameAndBio(
-            firebaseUid: event.firebaseUid, context: event.context);
+            email: event.email, context: event.context);
         emit(ProfileLoaded(customUser: _customuser!));
       } catch (e) {
         print(e);
@@ -23,14 +23,15 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         emit(ProfileNotFetched());
       }
     });
+
     on<ProfileDataUpdateRequested>((event, emit) async {
       emit(ProfileLoading());
       try {
         profileRepository.updateNameAndBio(
-          firebaseUid: event.firebaseUid,
           name: event.name,
           bio: event.bio,
           context: event.context,
+          email: event.email,
         );
         emit(ProfileLoaded());
       } catch (e) {

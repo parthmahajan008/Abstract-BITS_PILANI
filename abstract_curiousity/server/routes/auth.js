@@ -6,9 +6,7 @@ authRouter.post("/api/signup", async (req, res) => {
   try {
     const { name, email, firebaseUid } = req.body;
 
-    const existingUser = await User.findOne({
-      $or: [{ email }, { firebaseUid }],
-    });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
         message: "User already exists",
@@ -21,22 +19,23 @@ authRouter.post("/api/signup", async (req, res) => {
       email,
     });
     await user.save();
-    res.status(200).json({
+    console.log(user);
+    return res.status(200).json({
       message: "User created successfully",
       user,
     });
   } catch (err) {
     console.log(err);
-    res.status(500).json({
-      message: "Internal Server Error",
+    return res.status(500).json({
+      message: err.message,
     });
   }
 });
 
 authRouter.put("/api/editProfile", async (req, res) => {
   try {
-    const { firebaseUid, name, bio } = req.body;
-    const user = await User.findOne({ firebaseUid });
+    const { name, email, bio } = req.body;
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({
         message: "User not found",
@@ -57,8 +56,8 @@ authRouter.put("/api/editProfile", async (req, res) => {
 });
 authRouter.get("/api/getEditInfo", async (req, res) => {
   try {
-    const firebaseUid = req.query.firebaseUid;
-    const user = await User.findOne({ firebaseUid });
+    const email = req.query.email;
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({
         message: "User not found",

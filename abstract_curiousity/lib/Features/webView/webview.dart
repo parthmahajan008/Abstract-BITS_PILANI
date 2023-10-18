@@ -1,9 +1,14 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:abstract_curiousity/Features/webView/_components/navigationBar.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewApp extends StatefulWidget {
-  const WebViewApp({super.key});
+  final String link;
+  const WebViewApp({
+    Key? key,
+    required this.link,
+  }) : super(key: key);
 
   @override
   State<WebViewApp> createState() => _WebViewAppState();
@@ -57,8 +62,7 @@ class _WebViewAppState extends State<WebViewApp> {
         },
       )
       ..loadRequest(
-        Uri.parse(
-            'https://www.theverge.com/2023/10/10/23831415/new-ps5-model-removable-disc-drive-sony-price-release-date'),
+        Uri.parse(widget.link),
       );
   }
 
@@ -92,7 +96,8 @@ mainContent;''');
 
           setState(() {
             _extractedContent = mainContent.toString();
-            print(_extractedContent);
+
+            // print(_extractedContent);
           });
           // ignore: use_build_context_synchronously
           showModalBottomSheet(

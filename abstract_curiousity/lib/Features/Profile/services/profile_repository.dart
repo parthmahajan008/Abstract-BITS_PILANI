@@ -8,18 +8,18 @@ import 'package:http/http.dart' as http;
 
 class ProfileRepository {
   void updateNameAndBio({
-    required String firebaseUid,
     required String name,
     required String bio,
+    required String email,
     required BuildContext context,
   }) async {
     try {
       http.Response res = await http.put(
         Uri.parse('$uri/api/editProfile'),
         body: jsonEncode({
-          "firebaseUid": firebaseUid,
           "name": name,
           "bio": bio,
+          "email": email,
         }),
         headers: <String, String>{
           'Content-Type': 'application/json;charset=UTF-8',
@@ -39,31 +39,33 @@ class ProfileRepository {
   }
 
   Future<CustomUser?> getCurrentNameAndBio({
-    required String firebaseUid,
+    required String email,
     required BuildContext context,
   }) async {
     CustomUser? customUser;
     try {
       http.Response res = await http.get(
-        Uri.parse('$uri/api/getEditInfo?firebaseUid=$firebaseUid'),
+        Uri.parse('$uri/api/getEditInfo?email=$email'),
         headers: <String, String>{
           'Content-Type': 'application/json;charset=UTF-8',
         },
       );
-      print("----------------------");
-      print(res.body);
+      // print("----------------------");
+      // print(res.body);
 
       // ignore: use_build_context_synchronously
-      httpErrorHandle(
-        response: res,
-        context: context,
-        onSuccess: () {
-          customUser = CustomUser.fromJson(res.body);
-          showSnackBar(context, "User Details Loaded");
-        },
-      );
+      if (res.statusCode == 200) {
+        customUser = CustomUser.fromJson(res.body);
+      }
+      // httpErrorHandle(
+      //   response: res,
+      //   context: context,
+      //   onSuccess: () {
+      //     showSnackBar(context, "User Details Loaded");
+      //   },
+      // );
     } catch (e) {
-      print(e);
+      // print(e);
       throw Exception('Failed to Update Data');
     }
 

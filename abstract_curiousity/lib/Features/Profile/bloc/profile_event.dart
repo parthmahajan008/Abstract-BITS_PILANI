@@ -9,23 +9,23 @@ abstract class ProfileEvent extends Equatable {
 
 @override
 class ProfileDetailsRequested extends ProfileEvent {
-  final String firebaseUid;
+  final String email;
   final BuildContext context;
 
-  ProfileDetailsRequested({required this.firebaseUid, required this.context});
+  ProfileDetailsRequested({required this.email, required this.context});
 }
 
 @override
 class ProfileDataUpdateRequested extends ProfileEvent {
-  final String firebaseUid;
   final String name;
   final String bio;
   final BuildContext context;
+  final String email;
 
   ProfileDataUpdateRequested({
-    required this.firebaseUid,
     required this.name,
     required this.bio,
     required this.context,
+    required this.email,
   });
 }

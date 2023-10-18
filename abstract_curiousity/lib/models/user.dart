@@ -14,7 +14,7 @@ class CustomUser {
     required this.name,
     required this.email,
     this.writer = false,
-    this.bio,
+    this.bio = "",
   });
 
   Map<String, dynamic> toMap() {

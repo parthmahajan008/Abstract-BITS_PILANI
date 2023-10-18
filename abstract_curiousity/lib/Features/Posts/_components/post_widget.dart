@@ -13,7 +13,7 @@ class PostWidget extends StatelessWidget {
       margin: const EdgeInsets.all(10),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withOpacity(0.08),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -100,8 +100,8 @@ class PostWidget extends StatelessWidget {
                       textAlign: TextAlign.left,
                       style: TextStyle(
                           color: Colors.white,
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold),
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -126,7 +126,7 @@ class PostWidget extends StatelessWidget {
                 },
                 child: const Icon(
                   Icons.favorite,
-                  size: 30,
+                  size: 20,
                   color: Colors.white,
                 ),
               ),
@@ -154,7 +154,7 @@ class PostWidget extends StatelessWidget {
                 },
                 child: const Icon(
                   Icons.comment,
-                  size: 30,
+                  size: 20,
                   color: Colors.white,
                 ),
               ),

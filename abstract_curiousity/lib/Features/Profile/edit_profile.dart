@@ -2,11 +2,13 @@
 
 // Path: lib/Features/Edit%20Profile/edit_profile.dart
 // Compare this snippet from lib/Features/Profile/_components/widgets/danger_modal.dart:
+import 'package:abstract_curiousity/Features/Profile/bloc/profile_bloc.dart';
 import 'package:abstract_curiousity/Features/Profile/services/profile_repository.dart';
+import 'package:abstract_curiousity/Features/UserRegisteration/services/bloc/auth_bloc.dart';
 import 'package:abstract_curiousity/models/user.dart';
-import 'package:abstract_curiousity/utils/widgets/extendedTextButton.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EditProfile extends StatefulWidget {
   final String nameOfuser;
@@ -41,7 +43,7 @@ class _EditProfileState extends State<EditProfile> {
 
   void getUserData() async {
     CustomUser? _customUser = await _profileRepository.getCurrentNameAndBio(
-        firebaseUid: _firebaseAuth.currentUser!.uid, context: context);
+        email: _firebaseAuth.currentUser!.email!, context: context);
     _name = _customUser!.name;
     _bio = _customUser.bio!;
     nameEditingController.text = _name;
@@ -54,11 +56,13 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   void updateUserData() {
-    _profileRepository.updateNameAndBio(
-      firebaseUid: FirebaseAuth.instance.currentUser!.uid,
-      name: _name,
-      bio: _bio,
-      context: context,
+    BlocProvider.of<ProfileBloc>(context).add(
+      ProfileDataUpdateRequested(
+        name: _name,
+        context: context,
+        bio: _bio,
+        email: _firebaseAuth.currentUser!.email!,
+      ),
     );
   }
 

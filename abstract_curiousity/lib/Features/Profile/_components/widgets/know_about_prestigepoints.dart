@@ -12,10 +12,10 @@ class _KnowAboutEngagementsState extends State<KnowAboutEngagements> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(15),
-      height: MediaQuery.of(context).size.height * 0.4,
+      height: MediaQuery.of(context).size.height * 0.43,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.9),
+        color: Colors.black.withOpacity(1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: const Column(

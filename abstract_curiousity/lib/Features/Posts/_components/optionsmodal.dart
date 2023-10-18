@@ -20,10 +20,6 @@ class OptionsMenu extends StatelessWidget {
       },
       child: Container(
         padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.3),
-          borderRadius: BorderRadius.circular(50),
-        ),
         child: const Icon(
           Icons.more_vert,
           size: 20,

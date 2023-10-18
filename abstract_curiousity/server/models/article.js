@@ -1,13 +1,11 @@
 import mongoose from "mongoose";
 const articleSchema = mongoose.Schema({
   source: {
-    type: String,
-    required: true,
-    trim: true,
+    id: String, // ID of the news source (can be null)
+    name: String, // Name of the news source
   },
   author: {
     type: String,
-    required: true,
   },
   title: {
     type: String,
