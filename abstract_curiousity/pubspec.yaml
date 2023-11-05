@@ -49,6 +49,7 @@ dependencies:
   image_cropper: ^5.0.0
   quill_html_editor: ^2.2.7
   flutter_html: ^3.0.0-beta.2
+  cloud_firestore: ^4.12.2
 
 dev_dependencies:
   flutter_test:

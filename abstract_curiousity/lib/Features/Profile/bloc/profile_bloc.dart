@@ -14,8 +14,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<ProfileDetailsRequested>((event, emit) async {
       emit(ProfileLoading());
       try {
-        CustomUser? _customuser = await profileRepository.getCurrentNameAndBio(
-            email: event.email, context: event.context);
+        CustomUser? _customuser =
+            await profileRepository.getCurrentNameAndBio();
         emit(ProfileLoaded(customUser: _customuser!));
       } catch (e) {
         print(e);

@@ -1,5 +1,7 @@
 import 'package:abstract_curiousity/Features/HomePage/homepage.dart';
 import 'package:abstract_curiousity/Features/UserRegisteration/services/auth_repository.dart';
+import 'package:abstract_curiousity/globalvariables.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -83,9 +85,30 @@ class _TopicSelectorPageState extends State<TopicSelectorPage> {
   final TopicSelector _topicSelector = TopicSelector();
   final AuthRepository _authRepository = AuthRepository();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  void saveUser() {
+  Map<String, Set<String>> convertToMap(List<List<String>> selectedTopics) {
+    Map<String, Set<String>> topicMap = {};
+
+    for (List<String> item in selectedTopics) {
+      String category = item[0];
+      String topic = item[1];
+
+      // Check if the category already exists in the map
+      if (topicMap.containsKey(category)) {
+        topicMap[category]!.add(topic);
+      } else {
+        // If the category doesn't exist, create a new set and add the topic to it
+        topicMap[category] = {topic};
+      }
+    }
+
+    return topicMap;
+  }
+
+  void saveUser(List<List<String>> topics) {
+    Map<String, Set<String>> topicMap = convertToMap(topics);
+    printError(topicMap.toString());
     _authRepository.saveUsertoBackend(
-        context: context, user: _firebaseAuth.currentUser!);
+        context: context, user: _firebaseAuth.currentUser!, topics: topicMap);
   }
 
 //create a seetter _showNextButton
@@ -207,7 +230,7 @@ class _TopicSelectorPageState extends State<TopicSelectorPage> {
                 ),
               ),
               onPressed: () {
-                saveUser();
+                saveUser(_selectedTopics);
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const HomePage()),
                 );

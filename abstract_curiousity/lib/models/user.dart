@@ -2,15 +2,14 @@
 import 'dart:convert';
 
 class CustomUser {
-  final String? id;
-  final String firebaseUid;
   final String name;
   final String email;
   final bool writer;
   final String? bio;
+  final dynamic topics;
+  // final Map<String, List<String>>? topics;
   CustomUser({
-    this.id,
-    required this.firebaseUid,
+    this.topics,
     required this.name,
     required this.email,
     this.writer = false,
@@ -19,31 +18,29 @@ class CustomUser {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'id': id,
-      'firebaseUid': firebaseUid,
       'name': name,
       'email': email,
       'writer': writer,
       'bio': bio,
+      'topics': topics,
     };
   }
 
   factory CustomUser.fromMap(Map<String, dynamic> map) {
     return CustomUser(
-      id: map['_id'] as String,
-      firebaseUid: map['firebaseUid'] as String,
       name: map['name'] as String,
       email: map['email'] as String,
       writer: map['writer'] as bool,
       bio: map['bio'] != null ? map['bio'] as String : null,
+      topics: map['topics'],
+      // != null
+      //     ? Map<String, Set<String>>.from(map['topics'] as Map)
+      //     : null,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory CustomUser.fromJson(String source) {
-    final Map<String, dynamic> data = json.decode(source);
-    final Map<String, dynamic> userData = data['user'];
-    return CustomUser.fromMap(userData);
-  }
+  factory CustomUser.fromJson(String source) =>
+      CustomUser.fromMap(json.decode(source) as Map<String, dynamic>);
 }

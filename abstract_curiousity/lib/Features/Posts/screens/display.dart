@@ -7,7 +7,7 @@ class DisplayScreen extends StatefulWidget {
   final String title;
 
   @override
-  _DisplayScreenState createState() => new _DisplayScreenState();
+  _DisplayScreenState createState() => new _DisplayScreenState(title: 'Hello');
 }
 
 class _DisplayScreenState extends State<DisplayScreen> {

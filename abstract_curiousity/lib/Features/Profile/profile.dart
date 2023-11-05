@@ -28,6 +28,7 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   void initState() {
+    setState(() {});
     super.initState();
     _pullRefresh();
   }

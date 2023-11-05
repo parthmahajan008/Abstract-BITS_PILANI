@@ -4,7 +4,7 @@
 // Compare this snippet from lib/Features/Profile/_components/widgets/danger_modal.dart:
 import 'package:abstract_curiousity/Features/Profile/bloc/profile_bloc.dart';
 import 'package:abstract_curiousity/Features/Profile/services/profile_repository.dart';
-import 'package:abstract_curiousity/Features/UserRegisteration/services/bloc/auth_bloc.dart';
+
 import 'package:abstract_curiousity/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -42,8 +42,7 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   void getUserData() async {
-    CustomUser? _customUser = await _profileRepository.getCurrentNameAndBio(
-        email: _firebaseAuth.currentUser!.email!, context: context);
+    CustomUser? _customUser = await _profileRepository.getCurrentNameAndBio();
     _name = _customUser!.name;
     _bio = _customUser.bio!;
     nameEditingController.text = _name;

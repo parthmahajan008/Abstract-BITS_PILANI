@@ -1,14 +1,15 @@
 import 'package:abstract_curiousity/globalvariables.dart';
-import 'package:abstract_curiousity/httperrorhandle.dart';
+
 import 'package:abstract_curiousity/models/user.dart';
-import 'package:abstract_curiousity/utils/widgets/utils.dart';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:http/http.dart' as http;
 
 class AuthRepository {
   final _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Future<UserCredential> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -35,25 +36,34 @@ class AuthRepository {
   void saveUsertoBackend({
     required BuildContext context,
     required User user,
+    required Map<String, Set<String>> topics,
   }) async {
     try {
+      //save user  to firebase backend in users collections
+
       CustomUser customuser = CustomUser(
-          firebaseUid: user.uid, name: user.displayName!, email: user.email!);
-      http.Response res = await http.post(
-        Uri.parse('$uri/api/signup'),
-        body: customuser.toJson(),
-        headers: <String, String>{
-          'Content-Type': 'application/json;charset=UTF-8',
-        },
+        name: user.displayName!,
+        email: user.email!,
+        topics: topics,
       );
-      httpErrorHandle(
-          response: res,
-          context: context,
-          onSuccess: () {
-            showSnackBar(context, "Logged In");
-          });
+      _firestore.collection('users').doc(user.uid).set(customuser.toMap());
+      
+      // http.Response res = await http.post(
+      //   Uri.parse('$uri/api/signup'),
+      //   body: customuser.toJson(),
+      //   headers: <String, String>{
+      //     'Content-Type': 'application/json;charset=UTF-8',
+      //   },
+      // );
+      // httpErrorHandle(
+      //     response: res,
+      //     context: context,
+      //     onSuccess: () {
+      //       showSnackBar(context, "Logged In");
+      //     });
       // print(res.body);
     } catch (e) {
+      printError(e.toString());
       throw Exception('Failed to Save Data');
     }
   }
@@ -62,7 +72,7 @@ class AuthRepository {
     try {
       GoogleSignIn().disconnect();
       await _firebaseAuth.signOut();
-      print('firebase post SIGNOUT user: ${_firebaseAuth.currentUser}');
+      printWarning('firebase post SIGNOUT user: ${_firebaseAuth.currentUser}');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'network-request-failed') {
         throw Exception('No internet connection');
