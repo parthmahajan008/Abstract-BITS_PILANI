@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:abstract_curiousity/Features/webView/_components/navigationBar.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -40,7 +39,7 @@ class _WebViewAppState extends State<WebViewApp> {
             });
           },
           onNavigationRequest: (navigation) {
-            final host = Uri.parse(navigation.url).host;
+            // final host = Uri.parse(navigation.url).host;
 
             // ScaffoldMessenger.of(context).showSnackBar(
             //   SnackBar(
@@ -53,7 +52,7 @@ class _WebViewAppState extends State<WebViewApp> {
           },
         ),
       )
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setJavaScriptMode(JavaScriptMode.disabled)
       ..addJavaScriptChannel(
         'SnackBar',
         onMessageReceived: (message) {
@@ -91,6 +90,7 @@ class _WebViewAppState extends State<WebViewApp> {
         backgroundColor: Colors.black,
         onPressed: () async {
           final mainContent = await controller.runJavaScriptReturningResult('''
+
 var mainContent = document.querySelector('body').innerText;
 mainContent;''');
 

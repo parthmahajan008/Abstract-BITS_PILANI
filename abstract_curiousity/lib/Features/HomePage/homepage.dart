@@ -1,6 +1,6 @@
 import 'package:abstract_curiousity/Features/Headlines/headlines.dart';
 import 'package:abstract_curiousity/Features/HomePage/home.dart';
-import 'package:abstract_curiousity/Features/Posts/posts.dart';
+import 'package:abstract_curiousity/Features/Posts/screens/posts.dart';
 import 'package:abstract_curiousity/Features/Profile/profile.dart';
 import 'package:flutter/material.dart';
 

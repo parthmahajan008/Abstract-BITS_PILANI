@@ -1,4 +1,6 @@
 import 'package:abstract_curiousity/Features/Posts/_components/post_widget.dart';
+
+import 'package:abstract_curiousity/Features/Posts/screens/new_screen.dart';
 import 'package:flutter/material.dart';
 
 class Posts extends StatefulWidget {
@@ -14,6 +16,18 @@ class _PostsState extends State<Posts> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const NewScreen(),
+                ),
+              );
+            },
+            child: const Icon(
+              Icons.share,
+            ),
+          ),
           appBar: PreferredSize(
             preferredSize: const Size.fromHeight(50.0),
             child: AppBar(
