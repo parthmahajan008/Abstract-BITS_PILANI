@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:abstract_curiousity/globalvariables.dart';
 import 'package:abstract_curiousity/models/user.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -62,7 +59,6 @@ class ProfileRepository {
             await _firestore.collection('users').doc(uid).get();
 
         if (userSnapshot.exists) {
-
           // Convert the Firestore document data to a CustomUser object
           customUser =
               CustomUser.fromMap(userSnapshot.data() as Map<String, dynamic>);

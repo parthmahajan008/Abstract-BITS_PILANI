@@ -7,6 +7,7 @@ class CustomUser {
   final bool writer;
   final String? bio;
   final dynamic topics;
+  final int numberOfArticles;
   // final Map<String, List<String>>? topics;
   CustomUser({
     this.topics,
@@ -14,6 +15,7 @@ class CustomUser {
     required this.email,
     this.writer = false,
     this.bio = "",
+    this.numberOfArticles = 0,
   });
 
   Map<String, dynamic> toMap() {
@@ -23,6 +25,7 @@ class CustomUser {
       'writer': writer,
       'bio': bio,
       'topics': topics,
+      'numberOfArticles': numberOfArticles,
     };
   }
 
@@ -36,6 +39,7 @@ class CustomUser {
       // != null
       //     ? Map<String, Set<String>>.from(map['topics'] as Map)
       //     : null,
+      numberOfArticles: map['numberOfArticles'] as int,
     );
   }
 

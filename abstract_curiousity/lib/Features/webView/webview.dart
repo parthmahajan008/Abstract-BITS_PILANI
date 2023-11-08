@@ -1,5 +1,12 @@
 import 'package:abstract_curiousity/Features/webView/_components/navigationBar.dart';
+import 'package:abstract_curiousity/Features/webView/fluttertts.dart';
+import 'package:abstract_curiousity/Features/webView/services/webview_repository.dart';
+import 'package:abstract_curiousity/Features/webView/summary.dart';
+import 'package:abstract_curiousity/globalvariables.dart';
+import 'package:abstract_curiousity/openai.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewApp extends StatefulWidget {
@@ -15,11 +22,87 @@ class WebViewApp extends StatefulWidget {
 
 class _WebViewAppState extends State<WebViewApp> {
   var loadingPercentage = 0;
+  final flutterTts = FlutterTts();
+  String words = '';
+  WebViewRepository webViewRepository = WebViewRepository();
+  final firestore = FirebaseFirestore.instance;
+  final OpenAIService openAIService = OpenAIService();
   late final WebViewController controller;
+  late String _extractedContent;
+  late String _summary = "";
+
+  Future<void> extractContent() async {
+    try {
+      final temp =
+          await webViewRepository.extractContentFromFirestore(widget.link);
+
+      if (temp.isEmpty) {
+        setState(() {
+          _extractedContent = "No content available";
+          _summary = "";
+        });
+        return;
+      } else {
+        setState(() {
+          _extractedContent = temp[0];
+          _summary = temp[1];
+        });
+        return;
+      }
+    } catch (e) {
+      setState(() {
+        _extractedContent = "Failed to extract content from Firestore: $e";
+      });
+    }
+  }
+
+  Future<void> summariseText() async {
+    try {
+      if (_summary.isNotEmpty) {
+        await webViewRepository.saveSummaryToFirebase(_summary, widget.link);
+        return;
+      } else if (_extractedContent.isNotEmpty) {
+        final String summary =
+            await openAIService.chatGPTAPI(_extractedContent);
+        // print("The summary is $summary");
+        setState(() {
+          _summary = summary;
+        });
+        await webViewRepository.saveSummaryToFirebase(_summary, widget.link);
+      } else {
+        setState(() {
+          _summary = "No matching article found in Firestore";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _summary = "Failed to extract content from Firestore: $e";
+      });
+    }
+  }
+
+  Future<void> systemSpeak(String content) async {
+    print("SYSTEM SPEAKING");
+    await flutterTts.speak(content);
+  }
+
+  Future<void> setSharedInstance() async {
+    await flutterTts.setSharedInstance(true);
+    await flutterTts.setIosAudioCategory(
+        IosTextToSpeechAudioCategory.ambient,
+        [
+          IosTextToSpeechAudioCategoryOptions.allowBluetooth,
+          IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
+          IosTextToSpeechAudioCategoryOptions.mixWithOthers
+        ],
+        IosTextToSpeechAudioMode.voicePrompt);
+  }
 
   @override
   void initState() {
     super.initState();
+    setSharedInstance();
+    extractContent();
     controller = WebViewController()
       ..setNavigationDelegate(
         NavigationDelegate(
@@ -39,15 +122,6 @@ class _WebViewAppState extends State<WebViewApp> {
             });
           },
           onNavigationRequest: (navigation) {
-            // final host = Uri.parse(navigation.url).host;
-
-            // ScaffoldMessenger.of(context).showSnackBar(
-            //   SnackBar(
-            //     content: Text(
-            //       'Blocking navigation to $host',
-            //     ),
-            //   ),
-            // );
             return NavigationDecision.navigate;
           },
         ),
@@ -66,8 +140,13 @@ class _WebViewAppState extends State<WebViewApp> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    flutterTts.stop();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    String _extractedContent = "";
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -81,7 +160,6 @@ class _WebViewAppState extends State<WebViewApp> {
         ),
         actions: [
           NavigationControls(controller: controller),
-          // Menu(controller: controller),
         ],
         backgroundColor: Colors.black,
       ),
@@ -89,44 +167,80 @@ class _WebViewAppState extends State<WebViewApp> {
         focusColor: Colors.black87,
         backgroundColor: Colors.black,
         onPressed: () async {
-          final mainContent = await controller.runJavaScriptReturningResult('''
-
-var mainContent = document.querySelector('body').innerText;
-mainContent;''');
-
-          setState(() {
-            _extractedContent = mainContent.toString();
-
-            // print(_extractedContent);
-          });
-          // ignore: use_build_context_synchronously
           showModalBottomSheet(
             enableDrag: true,
             useSafeArea: true,
+            isScrollControlled: true,
+            backgroundColor: Colors.black87,
             context: context,
             builder: (BuildContext context) {
-              return SingleChildScrollView(
-                child: Container(
-                  width: double.infinity,
-                  height: 1000,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(28),
-                    color: Colors.black87,
-                  ),
-                  padding: const EdgeInsets.all(15),
-                  child: Text(
-                    _extractedContent,
-                    style: const TextStyle(
-                      color: Colors.white,
+              return SizedBox(
+                height: 200,
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 20,
                     ),
-                  ),
+                    const Text(
+                      "Power your Reading with Ai, \nSummarise or Listen to the Article",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white70,
+                      ),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () async {
+                            printError(widget.link);
+                            await extractContent();
+                            await summariseText();
+                            if (_summary.isNotEmpty) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      SummaryPage(summary: _summary),
+                                ),
+                              );
+                            }
+                          },
+                          child: const Text("Summarise"),
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (_summary != "") {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      MyApp(content: _summary),
+                                ),
+                              );
+                              // await systemSpeak(_summary);
+                            }
+                          },
+                          onLongPress: () => flutterTts.stop(),
+                          child: const Text("Listen with Ai"),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                  ],
                 ),
               );
             },
           );
         },
         child: const Icon(
-          Icons.stream_outlined,
+          Icons.webhook_sharp,
           color: Colors.white,
         ),
       ),

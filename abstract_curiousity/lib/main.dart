@@ -57,7 +57,9 @@ class _MyAppState extends State<MyApp> {
           builder: (context, snapshot) {
             // If the snapshot has user data, then they're already signed in. So Navigating to the Dashboard.
             if (snapshot.hasData) {
-              return const HomePage();
+              return const HomePage(
+                pageNumber: 0,
+              );
             }
             // Otherwise, they're not signed in. Show the sign in page.
             return const LandingPage();

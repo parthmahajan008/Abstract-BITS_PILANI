@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:abstract_curiousity/Features/Headlines/services/headlinerepository.dart';
+import 'package:abstract_curiousity/Features/HomePage/services/homerepository.dart';
 import 'package:abstract_curiousity/Features/webView/webview.dart';
 import 'package:abstract_curiousity/models/article.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +43,7 @@ class _HeadlinesState extends State<Headlines> {
       body: SafeArea(
         child: Column(
           children: [
-            Center(
+            const Center(
               child: Text(
                 "Headlines",
                 style: TextStyle(
@@ -74,6 +75,7 @@ class ArticleListBuilder extends StatefulWidget {
 }
 
 class _ArticleListBuilderState extends State<ArticleListBuilder> {
+  HomeRepository _repository = HomeRepository();
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -90,6 +92,7 @@ class _ArticleListBuilderState extends State<ArticleListBuilder> {
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => WebViewApp(link: article.url)));
+                    _repository.incrementNumberOfArticlesRead();
                   },
                   child: Container(
                     margin:
@@ -100,10 +103,18 @@ class _ArticleListBuilderState extends State<ArticleListBuilder> {
                     child: ListTile(
                       trailing: Column(
                         children: [
-                          CircleAvatar(
-                            backgroundImage: NetworkImage(article
-                                .urlToImage!), // No matter how big it is, it won't overflow
-                          ),
+                          article.urlToImage != null
+                              ? CircleAvatar(
+                                  backgroundImage: NetworkImage(
+                                    article.urlToImage!,
+                                  ), // No matter how big it is, it won't overflow
+                                  onBackgroundImageError:
+                                      (exception, stackTrace) {},
+                                )
+                              : const CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                      "assets/images/landingScreen5.png"),
+                                )
                         ],
                       ),
                       contentPadding: const EdgeInsets.symmetric(
