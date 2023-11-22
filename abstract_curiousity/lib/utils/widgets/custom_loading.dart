@@ -82,7 +82,7 @@ class _LoadingAnimationComponentState extends State<LoadingAnimationComponent>
     );
 
     Future.delayed(
-      Duration(milliseconds: widget.index * 80),
+      Duration(milliseconds: widget.index * 20),
       () {
         if (!disposed) {
           _animationController.forward();

@@ -22,10 +22,13 @@ class HomeRepository {
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
       if (data['status'] == 'ok' && data['articles'] != null) {
-        List<CustomArticle> articles = (data['articles'] as List)
-            .map((articleData) => CustomArticle.fromMap(articleData))
-            .toList();
-        await saveArticlesToFirestore(articles);
+        List<CustomArticle> articles =
+            (data['articles'] as List).map((articleData) {
+          CustomArticle obj = CustomArticle.fromMap(articleData);
+          saveArticleToFirestore(obj);
+          return obj;
+        }).toList();
+        // await saveArticlesToFirestore(articles); // Save articles to Firestore
         return articles;
       } else {
         throw Exception('Failed to fetch headlines');
@@ -39,29 +42,34 @@ class HomeRepository {
     await Firebase.initializeApp();
   }
 
-  Future<void> saveArticlesToFirestore(List<CustomArticle> articles) async {
+  Future<void> saveArticleToFirestore(CustomArticle article) async {
     if (Firebase.apps.isEmpty) {
       await initializeFirebase();
     }
 
     final collection = firestore.collection("articles");
-    final querySnapshot = await firestore.collection("articles").get();
-    if (querySnapshot.docs.isNotEmpty) {
-      final existingURLs = <String, bool>{};
-      for (var doc in querySnapshot.docs) {
-        final url = doc.data()["url"] as String;
-        existingURLs[url] = true;
-      }
-      // final urls =
-      //     querySnapshot.docs.map((doc) => doc.data()["url"] as String).toList();
-      for (CustomArticle article in articles) {
-        final articleURL = article.url;
-        if (!existingURLs.containsKey(articleURL)) {
-          await collection.add(article.toMap());
-        }
-      }
-    } else {
-      for (CustomArticle article in articles) {
+
+    final querySnapshot =
+        await collection.where('url', isEqualTo: article.url).limit(1).get();
+
+    if (querySnapshot.docs.isEmpty) {
+      await collection.add(article.toMap());
+    }
+  }
+
+  Future<void> saveArticlesToFirestore(List<CustomArticle> articles) async {
+
+    if (Firebase.apps.isEmpty) {
+      await initializeFirebase();
+    }
+
+    final collection = firestore.collection("articles");
+
+    for (CustomArticle article in articles) {
+      final querySnapshot =
+          await collection.where('url', isEqualTo: article.url).limit(1).get();
+
+      if (querySnapshot.docs.isEmpty) {
         await collection.add(article.toMap());
       }
     }
@@ -118,8 +126,9 @@ class HomeRepository {
       final firestore = FirebaseFirestore.instance;
       final articlesCollection = firestore.collection("articles");
 
-      final querySnapshot = await articlesCollection.get();
-
+      final querySnapshot = await articlesCollection
+          .orderBy('publishedAt', descending: true)
+          .get();
       if (querySnapshot.docs.isNotEmpty) {
         final articles = querySnapshot.docs
             .map((doc) => CustomArticle.fromMap(doc.data()))
