@@ -1,85 +1,27 @@
-import 'package:abstract_curiousity/Features/HomePage/components/foryou_section.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+
 import 'package:abstract_curiousity/Features/HomePage/services/homerepository.dart';
 import 'package:abstract_curiousity/Features/webView/webview.dart';
 import 'package:abstract_curiousity/models/article.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class ReadingHistory extends StatefulWidget {
-  const ReadingHistory({super.key});
+// Import your CustomArticle model and the fetchTopHeadlines function here
 
-  @override
-  State<ReadingHistory> createState() => _ReadingHistoryState();
-}
-
-class _ReadingHistoryState extends State<ReadingHistory> {
-  List<CustomArticle> headlines = [];
-  Future _refresh() async {
-    List<CustomArticle> articles = await HomeRepository()
-        .fetchUserHistory(FirebaseAuth.instance.currentUser!.uid);
-    setState(() {
-      headlines = articles;
-    });
-  }
-
-  @override
-  void initState() {
-    _refresh();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: const Text(
-          "Reading History",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 23,
-          ),
-        ),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.grey,
-          ),
-        ),
-      ),
-      body: Column(
-        children: [
-          ArticleListBuilder_FORHISTORY(
-            headlines: headlines,
-            refresh: _refresh,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ArticleListBuilder_FORHISTORY extends StatefulWidget {
+class ArticleListBuilder extends StatefulWidget {
   final List<CustomArticle> headlines;
   final Future<void> Function() refresh;
-  const ArticleListBuilder_FORHISTORY({
+  const ArticleListBuilder({
     Key? key,
     required this.headlines,
     required this.refresh,
   }) : super(key: key);
 
   @override
-  State<ArticleListBuilder_FORHISTORY> createState() =>
-      _ArticleListBuilder_FORHISTORYState();
+  State<ArticleListBuilder> createState() => _ArticleListBuilderState();
 }
 
-class _ArticleListBuilder_FORHISTORYState
-    extends State<ArticleListBuilder_FORHISTORY> {
+class _ArticleListBuilderState extends State<ArticleListBuilder> {
+  HomeRepository _repository = HomeRepository();
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -94,6 +36,8 @@ class _ArticleListBuilder_FORHISTORYState
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => WebViewApp(link: article.url)));
+                _repository.incrementNumberOfArticlesRead();
+                _repository.saveArticleToUserHistory(article);
               },
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 08, vertical: 7),

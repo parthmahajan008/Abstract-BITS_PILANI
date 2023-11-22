@@ -5,7 +5,8 @@ import 'package:abstract_curiousity/Features/Profile/profile.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final int pageNumber;
+  const HomePage({super.key, required this.pageNumber});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -13,6 +14,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _index = 0;
+  @override
+  void initState() {
+    super.initState();
+    _index = widget.pageNumber;
+  }
+
   List<Widget> pages = const [Home(), Posts(), Headlines(), UserProfile()];
   @override
   Widget build(BuildContext context) {

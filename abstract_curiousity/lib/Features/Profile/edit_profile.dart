@@ -2,6 +2,7 @@
 
 // Path: lib/Features/Edit%20Profile/edit_profile.dart
 // Compare this snippet from lib/Features/Profile/_components/widgets/danger_modal.dart:
+import 'package:abstract_curiousity/Features/HomePage/homepage.dart';
 import 'package:abstract_curiousity/Features/Profile/bloc/profile_bloc.dart';
 import 'package:abstract_curiousity/Features/Profile/services/profile_repository.dart';
 
@@ -90,7 +91,15 @@ class _EditProfileState extends State<EditProfile> {
           ElevatedButton(
             onPressed: () {
               updateUserData();
-              Navigator.of(context).pop();
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) => const HomePage(
+                    pageNumber: 3,
+                  ),
+                ),
+                (route) => false,
+              );
+              // Navigator.of(context).pop();
             },
             child: const Text(
               "Save",

@@ -1,5 +1,11 @@
+import 'package:abstract_curiousity/Features/Headlines/headlines.dart';
 import 'package:abstract_curiousity/Features/HomePage/CategoryNewsPage.dart';
-import 'package:abstract_curiousity/Features/webView/webview.dart';
+import 'package:abstract_curiousity/Features/HomePage/search_page.dart';
+
+import 'package:abstract_curiousity/Features/HomePage/services/homerepository.dart';
+import 'package:abstract_curiousity/Features/HomePage/usercomponent.dart';
+import 'package:abstract_curiousity/models/article.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -9,14 +15,12 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
-  final _controller = PageController(
-    initialPage: 0,
-  );
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+  bool isSearchBarOpen = false;
+
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -26,56 +30,58 @@ class _HomeState extends State<Home> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.black,
-          actions: const [
-            SizedBox(
+          actions: [
+            const SizedBox(
               width: 10,
             ),
-            Icon(
+            const Icon(
               Icons.shield_moon,
               color: Colors.white,
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
-            Text(
-              'Seeker',
+            const Text(
+              'Read your daily news',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Spacer(),
-            Icon(
-              Icons.lightbulb_outline,
-              color: Colors.yellowAccent,
-              size: 25,
-            ),
-            Text(
-              ' 6',
-              style: TextStyle(
+            const Spacer(),
+            IconButton(
+              icon: const Icon(
+                Icons.search,
                 color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w300,
               ),
-            ),
-            SizedBox(
-              width: 10,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) {
+                      return const SearchBarN();
+                    },
+                  ),
+                );
+              },
             ),
           ],
-          bottom: const TabBar(
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.grey,
-            tabs: [
-              Tab(
-                text: "For You",
-              ),
-              Tab(text: "Entertainment"),
-              Tab(text: "Business"),
-              Tab(text: "Technology"),
-              Tab(text: "Politics"),
-            ],
-          ),
+          bottom: isSearchBarOpen
+              ? null
+              : const TabBar(
+                  labelColor: Colors.white,
+                  unselectedLabelColor: Colors.grey,
+                  tabs: [
+                    Tab(
+                      text: "For You",
+                    ),
+                    Tab(text: "Entertainment"),
+                    Tab(text: "Business"),
+                    Tab(text: "Technology"),
+                    Tab(text: "Sports"),
+                  ],
+                ),
         ),
         backgroundColor: Colors.black,
         body: const TabBarView(
@@ -84,7 +90,7 @@ class _HomeState extends State<Home> {
             CategoricalArticles(topic: "entertainment"),
             CategoricalArticles(topic: "business"),
             CategoricalArticles(topic: "technology"),
-            CategoricalArticles(topic: "politics"),
+            CategoricalArticles(topic: "sports"),
           ],
         ),
       ),
@@ -92,117 +98,143 @@ class _HomeState extends State<Home> {
   }
 }
 
-class ForYouPage extends StatelessWidget {
+class ForYouPage extends StatefulWidget {
   const ForYouPage({
     super.key,
   });
 
   @override
+  State<ForYouPage> createState() => _ForYouPageState();
+}
+
+class _ForYouPageState extends State<ForYouPage> {
+  final HomeRepository _homeRepository = HomeRepository();
+  String quote = "Always be curious";
+  List<CustomArticle> headlines = [];
+  Future _refresh() async {
+    _homeRepository.fetchNews().then((articles) {
+      setState(() {
+        headlines = articles;
+      });
+    });
+  }
+
+  bool isQuoteExpanded = false;
+  Future<void> fetchQuote() async {
+    String output = await _homeRepository.fetchRandomQuote();
+
+    setState(() {
+      quote = output;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchQuote();
+    _homeRepository.fetchNews().then((articles) {
+      setState(() {
+        headlines = articles;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(0.0),
         child: Column(
           children: [
-            Container(
-              height: 50,
-              padding: const EdgeInsets.all(8),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.shield_moon,
-                    color: Colors.white,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    'Seeker',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Spacer(),
-                  Icon(
-                    Icons.lightbulb_outline,
-                    color: Colors.yellowAccent,
-                    size: 25,
-                  ),
-                  Text(
-                    ' 6',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                ],
-              ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+              child: YourWidget(userId: FirebaseAuth.instance.currentUser!.uid),
             ),
             const SizedBox(
               height: 10,
             ),
-            //a container to view a quote daily image from the internet
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => WebViewApp(
-                      link: "theverge.com",
-                    ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: GestureDetector(
+                onTap: () {
+                  // setState(() {
+                  //   isQuoteExpanded = !isQuoteExpanded;
+                  // });
+                },
+                child: Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 8, top: 1),
+                  // add top padding
+                  padding: const EdgeInsets.only(top: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                );
-              },
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const Text(
-                      'Quote of the day',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10.0),
+                            child: Text(
+                              'Quote of the day',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          Flexible(
+                            child: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  isQuoteExpanded = !isQuoteExpanded;
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.arrow_drop_down,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      height: 250,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      width: double.infinity,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          "https://images.unsplash.com/photo-1494178270175-e96de2971df9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2048&q=80",
-                          fit: BoxFit.cover,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 4),
+                        child: Text(
+                          isQuoteExpanded
+                              ? '“$quote”'
+                              : '“${quote.substring(0, quote.length > 60 ? 60 : quote.length)}...”',
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.0),
+              child: Divider(
+                color: Colors.white30,
+              ),
+            ),
+            ArticleListBuilder(headlines: headlines, refresh: _refresh),
           ],
         ),
       ),

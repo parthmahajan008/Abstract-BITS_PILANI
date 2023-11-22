@@ -1,4 +1,5 @@
 import 'package:abstract_curiousity/Features/HomePage/homepage.dart';
+import 'package:abstract_curiousity/Features/HomePage/services/homerepository.dart';
 import 'package:abstract_curiousity/Features/Profile/bloc/profile_bloc.dart';
 import 'package:abstract_curiousity/Features/Profile/services/profile_repository.dart';
 import 'package:abstract_curiousity/Features/UserRegisteration/screens/login_google.dart';
@@ -9,6 +10,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'Features/Headlines/bloc/headline_bloc.dart';
+import 'Features/Headlines/services/headlinerepository.dart';
+import 'Features/HomePage/bloc/news_fetch_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +42,13 @@ class _MyAppState extends State<MyApp> {
           create: (BuildContext context) =>
               ProfileBloc(profileRepository: ProfileRepository()),
         ),
+        BlocProvider<NewsFetchBloc>(
+          create: (BuildContext context) =>
+              NewsFetchBloc(homeRepository: HomeRepository()),
+        ),
+        BlocProvider<HeadlineBloc>(
+            create: (BuildContext context) =>
+                HeadlineBloc(headlineRepository: HeadlineRepository())),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -57,7 +69,9 @@ class _MyAppState extends State<MyApp> {
           builder: (context, snapshot) {
             // If the snapshot has user data, then they're already signed in. So Navigating to the Dashboard.
             if (snapshot.hasData) {
-              return const HomePage();
+              return const HomePage(
+                pageNumber: 0,
+              );
             }
             // Otherwise, they're not signed in. Show the sign in page.
             return const LandingPage();

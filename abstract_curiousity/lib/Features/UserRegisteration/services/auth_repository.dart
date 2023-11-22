@@ -40,14 +40,27 @@ class AuthRepository {
   }) async {
     try {
       //save user  to firebase backend in users collections
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
 
-      CustomUser customuser = CustomUser(
-        name: user.displayName!,
-        email: user.email!,
-        topics: topics,
-      );
-      _firestore.collection('users').doc(user.uid).set(customuser.toMap());
-      
+      if (!userDoc.exists) {
+        // User does not exist, save the new user data
+        CustomUser customuser = CustomUser(
+          name: user.displayName!,
+          email: user.email!,
+          topics: topics,
+        );
+        await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .set(customuser.toMap());
+      }
+      // CustomUser customuser = CustomUser(
+      //   name: user.displayName!,
+      //   email: user.email!,
+      //   topics: topics,
+      // );
+      // _firestore.collection('users').doc(user.uid).set(customuser.toMap());
+
       // http.Response res = await http.post(
       //   Uri.parse('$uri/api/signup'),
       //   body: customuser.toJson(),

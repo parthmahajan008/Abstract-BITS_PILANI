@@ -232,7 +232,10 @@ class _TopicSelectorPageState extends State<TopicSelectorPage> {
               onPressed: () {
                 saveUser(_selectedTopics);
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const HomePage()),
+                  MaterialPageRoute(
+                      builder: (context) => const HomePage(
+                            pageNumber: 0,
+                          )),
                 );
               },
               child: const Text('Continue'),
