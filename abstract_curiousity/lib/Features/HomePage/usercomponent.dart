@@ -10,6 +10,10 @@ class UserLevelComponent extends StatelessWidget {
     required this.level,
     required this.articlesRead,
   });
+Map<String, Map<String, int>> productMap = {
+  '12ij292q9': {'quantity': 0, 'price': 123}
+};
+
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +29,8 @@ class UserLevelComponent extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           const Icon(
-            Icons.shield_moon,
-            color: Colors.white,
+            Icons.shield,
+            color: Colors.orange,
           ),
           const SizedBox(
             width: 10,
@@ -46,7 +50,7 @@ class UserLevelComponent extends StatelessWidget {
             size: 25,
           ),
           Text(
-            ' $articlesRead',
+            ' $articlesRead reads',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 18,

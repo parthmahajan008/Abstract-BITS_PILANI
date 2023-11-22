@@ -1,92 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:abstract_curiousity/Features/Headlines/bloc/headline_bloc.dart';
-import 'package:abstract_curiousity/Features/Headlines/services/headlinerepository.dart';
+
 import 'package:abstract_curiousity/Features/HomePage/services/homerepository.dart';
 import 'package:abstract_curiousity/Features/webView/webview.dart';
 import 'package:abstract_curiousity/models/article.dart';
-import 'package:abstract_curiousity/utils/widgets/custom_loading.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Import your CustomArticle model and the fetchTopHeadlines function here
-
-class Headlines extends StatefulWidget {
-  const Headlines({Key? key}) : super(key: key);
-
-  @override
-  State<Headlines> createState() => _HeadlinesState();
-}
-
-class _HeadlinesState extends State<Headlines> {
-  List<CustomArticle> headlines = [];
-  Future _refresh() async {
-    BlocProvider.of<HeadlineBloc>(context).add(
-      HeadlineRequested(),
-    );
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _refresh();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: BlocListener<HeadlineBloc, HeadlineState>(
-          listener: (context, state) {
-            if (state is HeadlineLoading) {
-              const Center(
-                  child: CircularProgressIndicator(
-                color: Colors.white,
-              ));
-            }
-            if (state is HeadlineError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.error),
-                ),
-              );
-            }
-            if (state is HeadlineLoaded) {
-              headlines = state.articles;
-            }
-          },
-          child: BlocBuilder<HeadlineBloc, HeadlineState>(
-            builder: (context, state) {
-              if (state is HeadlineLoading) {
-                return const Center(child: CustomLoadingWidget());
-              }
-              if (state is HeadlineLoaded) {
-                headlines = state.articles;
-                return Column(children: [
-                  const Center(
-                    child: Text(
-                      "Headlines",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  ArticleListBuilder(headlines: headlines, refresh: _refresh),
-                ]);
-              }
-              return const Center(
-                child: Text("Page Not Serviced"),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class ArticleListBuilder extends StatefulWidget {
   final List<CustomArticle> headlines;

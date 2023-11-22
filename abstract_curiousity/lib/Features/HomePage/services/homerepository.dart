@@ -47,11 +47,11 @@ class HomeRepository {
     final collection = firestore.collection("articles");
     final querySnapshot = await firestore.collection("articles").get();
     if (querySnapshot.docs.isNotEmpty) {
-      final existingURLs = Map<String, bool>();
-      querySnapshot.docs.forEach((doc) {
+      final existingURLs = <String, bool>{};
+      for (var doc in querySnapshot.docs) {
         final url = doc.data()["url"] as String;
         existingURLs[url] = true;
-      });
+      }
       // final urls =
       //     querySnapshot.docs.map((doc) => doc.data()["url"] as String).toList();
       for (CustomArticle article in articles) {
@@ -64,6 +64,18 @@ class HomeRepository {
       for (CustomArticle article in articles) {
         await collection.add(article.toMap());
       }
+    }
+  }
+
+  Future<String> fetchRandomQuote() async {
+    final response =
+        await http.get(Uri.parse('https://api.quotable.io/random'));
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return data['content'] as String;
+    } else {
+      throw Exception('Failed to fetch a random quote');
     }
   }
 
@@ -98,7 +110,6 @@ class HomeRepository {
       await userDocRef.update({'numberOfArticles': FieldValue.increment(1)});
     } catch (e) {
       throw Exception("Firebase Error Occured");
-      print(e);
     }
   }
 

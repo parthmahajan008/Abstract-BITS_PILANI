@@ -43,11 +43,6 @@ class _UserProfileState extends State<UserProfile> {
     setState(() {});
   }
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

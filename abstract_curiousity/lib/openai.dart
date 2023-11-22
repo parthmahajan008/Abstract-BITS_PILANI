@@ -36,7 +36,7 @@ class OpenAIService {
         // });
         return content;
       }
-      return 'An internal error occurred';
+      return "Failed to summarise text";
     } catch (e) {
       return e.toString();
     }

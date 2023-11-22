@@ -8,4 +8,4 @@ void printError(String text) {
 }
 
 const API_KEY = "c8559c466c4d40bb8c798298d3ed02ed";
-const openAIAPIKey = "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";
+const openAIAPIKey = "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";

@@ -58,7 +58,7 @@ class _WebViewAppState extends State<WebViewApp> {
 
   Future<void> summariseText() async {
     try {
-      if (_summary.isNotEmpty) {
+      if (_summary.isNotEmpty || _summary == "Failed to summarise text") {
         await webViewRepository.saveSummaryToFirebase(_summary, widget.link);
         return;
       } else if (_extractedContent.isNotEmpty) {

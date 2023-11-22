@@ -18,7 +18,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
             await profileRepository.getCurrentNameAndBio();
         emit(ProfileLoaded(customUser: _customuser!));
       } catch (e) {
-        print(e);
         emit(ProfileError("Unable to Load data"));
         emit(ProfileNotFetched());
       }
