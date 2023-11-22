@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'package:abstract_curiousity/globalvariables.dart';
 import 'package:abstract_curiousity/models/article.dart';
@@ -58,7 +59,6 @@ class HomeRepository {
   }
 
   Future<void> saveArticlesToFirestore(List<CustomArticle> articles) async {
-
     if (Firebase.apps.isEmpty) {
       await initializeFirebase();
     }
@@ -106,6 +106,23 @@ class HomeRepository {
     }
   }
 
+  Future<void> saveArticleToUserHistory(CustomArticle article) async {
+    if (Firebase.apps.isEmpty) {
+      await initializeFirebase();
+    }
+
+    // Save the article in the history subcollection of each user
+    final usersCollection = firestore.collection("users");
+    final currentUserID = _auth.currentUser!.uid;
+
+    final historyCollection =
+        usersCollection.doc(currentUserID).collection("history");
+    Map<String, dynamic> articleMap = article.toMap();
+    articleMap['publishedAt'] = DateTime.now();
+
+    await historyCollection.add(articleMap);
+  }
+
   Future<void> incrementNumberOfArticlesRead() async {
     try {
       final firestore = FirebaseFirestore.instance;
@@ -119,6 +136,32 @@ class HomeRepository {
     } catch (e) {
       throw Exception("Firebase Error Occured");
     }
+  }
+
+  Future<List<CustomArticle>> fetchUserHistory(String userId) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+      final usersCollection = firestore.collection("users");
+
+      final historyCollection =
+          usersCollection.doc(userId).collection("history");
+
+      final querySnapshot =
+          await historyCollection.orderBy("publishedAt").get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final articles = querySnapshot.docs.map((doc) {
+          CustomArticle obj = CustomArticle.fromMap(doc.data());
+          return obj;
+        }).toList();
+        return articles;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print(e);
+    }
+    return [];
   }
 
   Future<List<CustomArticle>> fetchNews() async {

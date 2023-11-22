@@ -115,10 +115,10 @@ class _ArticleListBuilderState extends State<ArticleListBuilder> {
 
             return GestureDetector(
               onTap: () {
-                print(article.url);
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => WebViewApp(link: article.url)));
                 _repository.incrementNumberOfArticlesRead();
+                _repository.saveArticleToUserHistory(article);
               },
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 08, vertical: 7),

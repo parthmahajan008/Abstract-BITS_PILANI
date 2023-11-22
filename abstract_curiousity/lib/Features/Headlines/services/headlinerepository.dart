@@ -63,15 +63,15 @@ class HeadlineRepository {
     if (Firebase.apps.isEmpty) {
       await initializeFirebase();
     }
-    print(articles);
+    // print(articles);
     final collection = firestore.collection("headlines");
     final querySnapshot = await firestore.collection("headlines").get();
     if (querySnapshot.docs.isNotEmpty) {
-      final existingURLs = Map<String, bool>();
-      querySnapshot.docs.forEach((doc) {
+      final existingURLs = <String, bool>{};
+      for (var doc in querySnapshot.docs) {
         final url = doc.data()["url"] as String;
         existingURLs[url] = true;
-      });
+      }
       // final urls =
       //     querySnapshot.docs.map((doc) => doc.data()["url"] as String).toList();
       for (CustomArticle article in articles) {
