@@ -54,6 +54,7 @@ dependencies:
   flutter_tts: ^3.8.3
   speech_to_text: ^6.4.0
   flutter_speed_dial: ^7.0.0
+  envied: ^0.5.2
 
 dev_dependencies:
   flutter_test:
@@ -65,6 +66,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  envied_generator: ^0.5.2
+  build_runner: ^2.4.6
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

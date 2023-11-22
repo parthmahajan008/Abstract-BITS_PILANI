@@ -1,4 +1,4 @@
-import 'package:abstract_curiousity/globalvariables.dart';
+import 'package:abstract_curiousity/globalvariables1.dart';
 
 import 'package:abstract_curiousity/models/user.dart';
 

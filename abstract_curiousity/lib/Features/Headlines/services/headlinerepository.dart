@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:abstract_curiousity/globalvariables.dart';
+import 'package:abstract_curiousity/globalvariables1.dart';
 import 'package:abstract_curiousity/models/article.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';

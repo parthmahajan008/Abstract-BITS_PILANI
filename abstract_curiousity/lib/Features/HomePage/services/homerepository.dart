@@ -1,6 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
-import 'package:abstract_curiousity/globalvariables.dart';
+import 'package:abstract_curiousity/globalvariables1.dart';
 import 'package:abstract_curiousity/models/article.dart';
 import 'package:abstract_curiousity/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,6 +17,8 @@ class HomeRepository {
   Future<List<CustomArticle>> fetchNewsByTopic(String topic) async {
     final String uri =
         '$baseUrl/top-headlines?country=in&category=$topic&language=en&apiKey=$apiKey';
+    // final String uri =
+    //     '$baseUrl/top-headlines?category=$topic&language=en&apiKey=$apiKey';
 
     final response = await http.get(Uri.parse(uri));
 

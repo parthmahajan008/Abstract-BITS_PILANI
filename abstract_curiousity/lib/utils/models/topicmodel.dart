@@ -1,6 +1,6 @@
 import 'package:abstract_curiousity/Features/HomePage/homepage.dart';
 import 'package:abstract_curiousity/Features/UserRegisteration/services/auth_repository.dart';
-import 'package:abstract_curiousity/globalvariables.dart';
+import 'package:abstract_curiousity/globalvariables1.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

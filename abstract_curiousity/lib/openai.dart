@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:abstract_curiousity/globalvariables.dart';
+import 'package:abstract_curiousity/globalvariables1.dart';
 import 'package:http/http.dart' as http;
 
 class OpenAIService {

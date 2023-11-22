@@ -2,7 +2,7 @@ import 'package:abstract_curiousity/Features/webView/_components/navigationBar.d
 import 'package:abstract_curiousity/Features/webView/fluttertts.dart';
 import 'package:abstract_curiousity/Features/webView/services/webview_repository.dart';
 import 'package:abstract_curiousity/Features/webView/summary.dart';
-import 'package:abstract_curiousity/globalvariables.dart';
+import 'package:abstract_curiousity/globalvariables1.dart';
 import 'package:abstract_curiousity/openai.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
